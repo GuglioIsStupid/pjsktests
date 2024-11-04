@@ -16,25 +16,25 @@ function slideconnector:new()
         lane = 2,
         scaledTime = 1,
         l = 0,
-        r = 11
+        r = 2
     }
 
     self._tail = {
         time = 2,
         lane = 1,
         scaledTime = 2,
-        l = 0,
+        l = 8,
         r = 11
     }
 
     self.currentTime = -2
 end
 
-local function lerp(a, b, t)
+function lerp(a, b, t)
     return a + (b - a) * t
 end
 
-local function ease(s, type)
+function ease(s, type)
     if type == "In" then
         return s * s  -- In-quad
     elseif type == "Out" then
@@ -44,11 +44,11 @@ local function ease(s, type)
     return s  -- Linear
 end
 
-local function unlerpClamped(a, b, t)
+function unlerpClamped(a, b, t)
     return (t - a) / (b - a)
 end
 
-local function remap(n, start, stop, newStart, newStop, withinBounds)
+function remap(n, start, stop, newStart, newStop, withinBounds)
     local newStart = newStart or 0
     local newStop = newStop or 1
     local withinBounds = withinBounds or false
@@ -70,21 +70,16 @@ function slideconnector:getScale(scaledTime)
     return ease(unlerpClamped(self._head.scaledTime, self._tail.scaledTime, scaledTime), "Linear")
 end
 
-local note = {}
-function note.duration()
-    return 1.25
-end
-
-local function approach(from, to, now)
+function approach(from, to, now)
     return 1.06 ^ (45 * remap(now, from, to, -1, 1))
 end
 
 function slideconnector:getL(scale)
-    return lerp(self._head.l, self._tail.l, scale)
+    return lerp(self._head.l, self._tail.l, scale) - 5
 end
 
 function slideconnector:getR(scale)
-    return lerp(self._head.r, self._tail.r, scale)
+    return lerp(self._head.r, self._tail.r, scale) - 5
 end
 
 function slideconnector:update(dt)
@@ -97,7 +92,7 @@ end
 function slideconnector:render()
     local visibleTime = {
         min = math.max(self._head.scaledTime, self.currentTime),
-        max = math.min(self._tail.scaledTime, self.currentTime + note.duration())
+        max = math.min(self._tail.scaledTime, self.currentTime + 1.25)
     }
 
     if visibleTime.min >= visibleTime.max then
@@ -119,8 +114,8 @@ function slideconnector:render()
         }
 
         local y = {
-            min = approach(scaledTime.min - note.duration(), scaledTime.min, self.currentTime),
-            max = approach(scaledTime.max - note.duration(), scaledTime.max, self.currentTime)
+            min = approach(scaledTime.min - 1.25, scaledTime.min, self.currentTime),
+            max = approach(scaledTime.max - 1.25, scaledTime.max, self.currentTime)
         }
 
         local layout = {
@@ -140,11 +135,13 @@ function slideconnector:render()
             layout[i2] = layout[i2] * 53
             if i2:sub(1, 1) == "x" then
                 layout[i2] = layout[i2] + 60
-                local n = i2:sub(2, 2)
             end
         end
 
-        love.graphics.polygon('line', layout.x1, layout.y1, layout.x2, layout.y2, layout.x3, layout.y3, layout.x4, layout.y4)
+        love.graphics.push()
+            love.graphics.translate(53*10-2, 0)
+            love.graphics.polygon('line', layout.x1, layout.y1, layout.x2, layout.y2, layout.x3, layout.y3, layout.x4, layout.y4)
+        love.graphics.pop()
     end
 end
 

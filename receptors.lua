@@ -23,20 +23,7 @@ function receptors:update(dt)
 end
 
 function receptors:render()
-    for i = 0, 11 do
-        love.graphics.setColor(1, 1, 1)
 
-        local layout = {
-            x1 = self.receptors[i].l * (48*2)+60,
-            x2 = self.receptors[i].r * (48*2)+60,
-            y1 = love.graphics.getHeight() - 53,
-            y2 = love.graphics.getHeight()
-        }
-
-
-        print("X", layout.x1, "Y", layout.y1, "W", layout.x2 - layout.x1, "H", layout.y2 - layout.y1)
-        love.graphics.rectangle("line", layout.x1, layout.y1, layout.x2 - layout.x1, layout.y2 - layout.y1)
-    end
 end
 
 return receptors
