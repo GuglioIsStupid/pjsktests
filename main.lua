@@ -11,10 +11,11 @@ function perspectiveLayout(l, r, b, t)
     }
 end
 
+currentTime = -2
+
 class = require 'class'
 local tracenote = require 'slideconnector'
 local tapnote = require 'tapnote'
-local receptors = (require 'receptors')()
 
 local test = tracenote()
 local testtap = tapnote()
@@ -23,6 +24,7 @@ function love.load()
 end
 
 function love.update(dt)
+    currentTime = currentTime + dt
     test:update(dt)
     testtap:update(dt)
 end
@@ -30,5 +32,4 @@ end
 function love.draw()
     test:render()
     testtap:render()
-    receptors:render()
 end

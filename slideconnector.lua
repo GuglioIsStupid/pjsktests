@@ -3,31 +3,29 @@ local slideconnector = class:extend("slideconnector")
 function slideconnector:new()
     self._start = {
         time = 1,
-        scaledTime = 1
+        scaledTime = 2 + 1
     }
 
     self._end = {
         time = 2,
-        scaledTime = 2
+        scaledTime = 1 + 1
     }
 
     self._head = {
         time = 1,
         lane = 2,
-        scaledTime = 1,
-        l = 0,
+        scaledTime = 1 + 0.956,
+        l = 1,
         r = 2
     }
 
     self._tail = {
         time = 2,
         lane = 1,
-        scaledTime = 2,
-        l = 8,
-        r = 11
+        scaledTime = 2 + 0.956,
+        l = 3,
+        r = 7
     }
-
-    self.currentTime = -2
 end
 
 function lerp(a, b, t)
@@ -35,6 +33,7 @@ function lerp(a, b, t)
 end
 
 function ease(s, type)
+    type = "In"
     if type == "In" then
         return s * s  -- In-quad
     elseif type == "Out" then
@@ -75,7 +74,7 @@ function approach(from, to, now)
 end
 
 function slideconnector:getL(scale)
-    return lerp(self._head.l, self._tail.l, scale) - 5
+    return lerp(self._head.l, self._tail.l, scale)
 end
 
 function slideconnector:getR(scale)
@@ -83,16 +82,12 @@ function slideconnector:getR(scale)
 end
 
 function slideconnector:update(dt)
-    self.currentTime = self.currentTime + dt
-    if self.currentTime > 2 then
-        self.currentTime = 0
-    end
 end
 
 function slideconnector:render()
     local visibleTime = {
-        min = math.max(self._head.scaledTime, self.currentTime),
-        max = math.min(self._tail.scaledTime, self.currentTime + 1.25)
+        min = math.max(self._head.scaledTime, currentTime),
+        max = math.min(self._tail.scaledTime, currentTime + 1.25)
     }
 
     if visibleTime.min >= visibleTime.max then
@@ -100,7 +95,6 @@ function slideconnector:render()
     end
 
     local w = love.graphics.getWidth()
-    local centerX = w / 2  -- Calculate the center of the screen
 
     for i = 0, 9 do
         local scaledTime = {
@@ -114,8 +108,8 @@ function slideconnector:render()
         }
 
         local y = {
-            min = approach(scaledTime.min - 1.25, scaledTime.min, self.currentTime),
-            max = approach(scaledTime.max - 1.25, scaledTime.max, self.currentTime)
+            min = approach(scaledTime.min - 1.25, scaledTime.min, currentTime),
+            max = approach(scaledTime.max - 1.25, scaledTime.max, currentTime)
         }
 
         local layout = {
